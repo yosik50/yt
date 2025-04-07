@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>משחק אמוג'י</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 20px;
+      width: 80%;
+      max-width: 500px;
+    }
+    .emoji-card {
+      font-size: 36px;
+    }
+    .text-card {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      margin: 20px auto 20px;
+      max-width: 600px;
+    }
+    .key {
+      padding: 10px;
+      font-size: 18px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .key:active {
+      background-color: #ddd;
+    }
+    .space-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0px;
+    }
+    .space-key {
+      padding: 10px 80px;
+      font-size: 18px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .output {
+      font-size: 24px;
+      padding: 10px;
+      margin-top: 20px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+    }
+    .feedback-popup {
+      position: fixed;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4caf50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .feedback-popup.wrong {
+      background-color: #f44336;
+    }
+    .navigate-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+    .navigate-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card emoji-card">🤚🚫👉👦🪢🗡️🙏🌤️</div>
+  <div class="card text-card">מה האמירה המסתתרת באמוג'י?</div>
+  <div class="card"><input type="text" id="output" class="output" readonly /></div>
+
+  <div class="keyboard" id="keyboard"></div>
+  <div class="space-row">
+    <button class="space-key" onclick="appendChar(' ')">רווח</button>
+  </div>
+
+  <div class="feedback-popup" id="feedbackPopup"></div>
+
+  <button class="navigate-btn" onclick="window.location.href='';">דלג לעמוד אחר</button>
+
+  <script>
+    const correctAnswer = "אל תשלח ידך אל הנער";
+    let userAnswer = "";
+
+    const keyboardLayout = [
+      ['←','פ','ם','ן','ו','ט','א','ר','ק'],
+      ['ENTER','ף','ך','ל','ח','י','ע','כ','ג','ד','ש'],
+      ['ץ','ת','צ','מ','נ','ה','ב','ס','ז']
+    ];
+
+    const keyboard = document.getElementById("keyboard");
+    const output = document.getElementById("output");
+    const feedback = document.getElementById("feedbackPopup");
+
+    function appendChar(char) {
+      userAnswer += char;
+      output.value = userAnswer;
+    }
+
+    function deleteChar() {
+      userAnswer = userAnswer.slice(0, -1);
+      output.value = userAnswer;
+    }
+
+    function submitAnswer() {
+      if (userAnswer.trim() === correctAnswer) {
+        showFeedback("תשובה נכונה! כל הכבוד 🎉", false);
+      } else {
+        showFeedback("תשובה שגויה. נסה שוב ❌", true);
+      }
+    }
+
+    function showFeedback(message, isError) {
+      feedback.textContent = message;
+      feedback.classList.toggle("wrong", isError);
+      feedback.style.display = "block";
+      setTimeout(() => {
+        feedback.style.display = "none";
+      }, 3000);
+    }
+
+    // יצירת מקשים
+    keyboardLayout.forEach(row => {
+      row.forEach(key => {
+        const button = document.createElement("button");
+        button.classList.add("key");
+        button.textContent = (key === '←') ? '→' : key;
+        button.onclick = () => {
+          if (key === "←") deleteChar();
+          else if (key === "ENTER") submitAnswer();
+          else appendChar(key);
+        };
+        keyboard.appendChild(button);
+      });
+    });
+  </script>
+
+</body>
+</html>
